@@ -1,5 +1,7 @@
 import requests 
 import yaml
+from urllib.request import urlretrieve
+import os 
 
 url = "https://api.themoviedb.org/3"
 with open("config.yml",'r',encoding="utf-8") as file : 
@@ -10,7 +12,7 @@ headers = {
     "accept": "application/json",
     "Authorization": f"Bearer {Bearer}"
 }
-
+poster_dir = "poster"
 horror_movies = []
 
 for page in range(1,6) : 
@@ -41,8 +43,7 @@ for page in range(1,6) :
             "rating": movie['vote_average'],
             "synopsis": movie["overview"],
             "affiche_fr": f"https://image.tmdb.org/t/p/w500{poster_fr}" if poster_fr else "Non disponible",
-            "affiche_en": f"https://image.tmdb.org/t/p/w500{poster_en}"
-             if poster_en else "Non disponible"
+            "affiche_en": f"https://image.tmdb.org/t/p/w500{poster_en}" if poster_en else "Non disponible"
         })
 
 if horror_movies:
@@ -50,3 +51,13 @@ if horror_movies:
     print(f"Exemple : {horror_movies[0]['titre']}")
     print(f"Affiche FR : {horror_movies[0]['affiche_fr']}")
     print(f"Affiche EN : {horror_movies[0]['affiche_en']}")
+
+for movie in range (len(horror_movies)):
+        if horror_movies[movie]['affiche_fr'] != "Non disponible":
+            fr_save = os.path.join(poster_dir,f"{horror_movies[movie]['titre']}_fr.jpg")
+            urlretrieve(horror_movies[movie]['affiche_fr'],fr_save)
+
+        if horror_movies[movie]['affiche_en'] != "Non disponible":
+            en_save = os.path.join(poster_dir,f"{horror_movies[movie]['titre']}_en.jpg")    
+            urlretrieve(horror_movies[movie]['affiche_en'],en_save)
+        
